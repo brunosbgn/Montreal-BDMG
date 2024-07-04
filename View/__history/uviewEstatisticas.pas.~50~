@@ -1,0 +1,146 @@
+unit uviewEstatisticas;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, RESTRequest4D,
+  System.JSON;
+
+type
+  TviewEstatisticas = class(TForm)
+    pnlBotoes: TPanel;
+    btnMedia: TButton;
+    btnConcluidas: TButton;
+    btnTotal: TButton;
+    edtResultado: TEdit;
+    lblResultado: TLabel;
+    btnCancelar: TButton;
+    procedure btnTotalClick(Sender: TObject);
+    procedure btnMediaClick(Sender: TObject);
+    procedure btnConcluidasClick(Sender: TObject);
+    procedure btnCancelarClick(Sender: TObject);
+  private
+    procedure GetTotal;
+    procedure GetMediaPrioridades;
+    procedure GetConcluidas7Dias;
+  public
+    { Public declarations }
+  end;
+
+var
+  viewEstatisticas: TviewEstatisticas;
+
+implementation
+
+{$R *.dfm}
+
+{ TviewEstatisticas }
+
+procedure TviewEstatisticas.btnMediaClick(Sender: TObject);
+begin
+  GetMediaPrioridades;
+end;
+
+procedure TviewEstatisticas.btnCancelarClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TviewEstatisticas.btnConcluidasClick(Sender: TObject);
+begin
+  GetConcluidas7Dias;
+end;
+
+procedure TviewEstatisticas.btnTotalClick(Sender: TObject);
+begin
+  GetTotal;
+end;
+
+procedure TviewEstatisticas.GetConcluidas7Dias;
+var
+  LResponse: IResponse;
+  lObj: TJSONObject;
+begin
+  try
+    {Requisição no serviço}
+    LResponse := TRequest.New.BaseURL('http://localhost:9000/task/concluidas')
+      .BasicAuthentication('bruno', 'montreal')
+      .Accept('application/json')
+      .Get;
+
+    {Verificação da resposta}
+    if LResponse.StatusCode = 200 then
+    begin
+      lObj := TJSONObject.ParseJSONValue(LResponse.Content) as TJSONObject;
+      try
+        edtResultado.Text := 'Tarefas concluídas (últimos 7 dias): ' +  lObj.GetValue('concluidas_7_dias').Value;
+      finally
+        FreeAndNil(lObj);
+      end;
+    end
+    else
+      raise Exception.Create('Consulta não realizada!');
+  except
+    on E: Exception do
+      ShowMessage('Falha ao realizar a consulta: ' + E.Message);
+  end;
+end;
+
+procedure TviewEstatisticas.GetMediaPrioridades;
+var
+  LResponse: IResponse;
+  lObj: TJSONObject;
+begin
+  try
+    LResponse := TRequest.New.BaseURL('http://localhost:9000/task/media')
+      .BasicAuthentication('bruno', 'montreal')
+      .Accept('application/json')
+      .Get;
+
+    if LResponse.StatusCode = 200 then
+    begin
+      lObj := TJSONObject.ParseJSONValue(LResponse.Content) as TJSONObject;
+      try
+        edtResultado.Text := 'Média de Prioridade (Pendentes): ' +  lObj.GetValue('media_prioridade').Value;
+      finally
+        FreeAndNil(lObj);
+      end;
+    end
+    else
+      raise Exception.Create('Consulta não realizada!');
+  except
+    on E: Exception do
+      ShowMessage('Falha ao realizar a consulta: ' + E.Message);
+  end;
+end;
+
+procedure TviewEstatisticas.GetTotal;
+var
+  LResponse: IResponse;
+  lObj: TJSONObject;
+begin
+  try
+    LResponse := TRequest.New.BaseURL('http://localhost:9000/task/total')
+      .BasicAuthentication('bruno', 'montreal')
+      .Accept('application/json')
+      .Get;
+
+    if LResponse.StatusCode = 200 then
+    begin
+      lObj := TJSONObject.ParseJSONValue(LResponse.Content) as TJSONObject;
+      try
+        edtResultado.Text := 'Total de tarefas: ' +  lObj.GetValue('total_tarefas').Value;
+      finally
+        FreeAndNil(lObj);
+      end;
+    end
+    else
+      raise Exception.Create('Consulta não realizada!');
+  except
+    on E: Exception do
+      ShowMessage('Falha ao realizar a consulta: ' + E.Message);
+  end;
+end;
+
+end.

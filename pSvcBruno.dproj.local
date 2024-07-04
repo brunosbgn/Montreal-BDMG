@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2024/07/03 17:12:35.000.498,=C:\Users\jhony\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2024/07/03 17:13:19.000.902,C:\BrunoGoncalves\Montreal-BDMG\Service\usvcBruno.pas=C:\Users\jhony\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2024/07/03 17:13:19.000.902,C:\BrunoGoncalves\Montreal-BDMG\Service\usvcBruno.dfm=C:\Users\jhony\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>2024/07/03 17:13:25.000.811,C:\BrunoGoncalves\Montreal-BDMG\pSvcBruno.dproj=C:\Users\jhony\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2024/07/03 17:15:45.000.601,=C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas</Transaction>
+    <Transaction>2024/07/03 17:16:06.000.363,C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas=C:\BrunoGoncalves\Montreal-BDMG\Controller\ucontrollerTask.pas</Transaction>
+    <Transaction>2024/07/03 17:47:49.000.509,=C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas</Transaction>
+    <Transaction>2024/07/03 17:48:05.000.625,C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas=C:\BrunoGoncalves\Montreal-BDMG\Model\umodelTask.pas</Transaction>
+    <Transaction>2024/07/03 17:52:29.000.534,=C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas</Transaction>
+    <Transaction>2024/07/03 18:11:22.000.674,=C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas</Transaction>
+    <Transaction>2024/07/03 18:14:05.000.395,=C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas</Transaction>
+    <Transaction>2024/07/03 18:17:07.000.407,C:\BrunoGoncalves\Montreal-BDMG\Data\uDatabase.pas=C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas</Transaction>
+    <Transaction>2024/07/03 19:00:28.000.140,=C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas</Transaction>
+    <Transaction>2024/07/03 19:01:43.000.468,C:\BrunoGoncalves\Montreal-BDMG\Model\umodelConnection.dfm=C:\BrunoGoncalves\Montreal-BDMG\Unit1.dfm</Transaction>
+    <Transaction>2024/07/03 19:01:43.000.468,C:\BrunoGoncalves\Montreal-BDMG\Model\umodelConnection.pas=C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas</Transaction>
+    <Transaction>2024/07/03 19:01:53.000.804,C:\BrunoGoncalves\Montreal-BDMG\Model\umodelConnection.pas=</Transaction>
+    <Transaction>2024/07/03 19:02:00.000.242,=C:\BrunoGoncalves\Montreal-BDMG\Model\umodelConnection.pas</Transaction>
+    <Transaction>2024/07/03 19:03:32.000.748,C:\BrunoGoncalves\Montreal-BDMG\Data\uDatabase.pas=</Transaction>
+    <Transaction>2024/07/03 19:19:38.000.069,C:\BrunoGoncalves\Montreal-BDMG\Model\umodelConnection.pas=</Transaction>
+    <Transaction>2024/07/03 19:19:41.000.301,=C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas</Transaction>
+    <Transaction>2024/07/03 19:20:19.000.145,C:\BrunoGoncalves\Montreal-BDMG\Data\uConnection.pas=C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas</Transaction>
+    <Transaction>2024/07/03 19:27:28.000.163,=C:\BrunoGoncalves\Montreal-BDMG\Data\uConnection.pas</Transaction>
+    <Transaction>2024/07/04 12:22:21.000.965,=C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas</Transaction>
+    <Transaction>2024/07/04 13:06:56.000.844,=C:\BrunoGoncalves\Montreal-BDMG\Unit1.pas</Transaction>
+  </Transactions>
+</BorlandProject>

@@ -1,0 +1,66 @@
+unit usvcBruno;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.SvcMgr, Vcl.Dialogs, Horse, Horse.Jhonson,
+  Horse.Commons, Horse.BasicAuthentication;
+
+type
+  TsvcBruno = class(TService)
+    procedure ServiceCreate(Sender: TObject);
+    procedure ServiceStart(Sender: TService; var Started: Boolean);
+    procedure ServiceStop(Sender: TService; var Stopped: Boolean);
+  private
+    { Private declarations }
+  public
+    function GetServiceController: TServiceController; override;
+    { Public declarations }
+  end;
+
+var
+  svcBruno: TsvcBruno;
+
+implementation
+
+{$R *.dfm}
+
+uses ucontrollerTask;
+
+procedure ServiceController(CtrlCode: DWord); stdcall;
+begin
+  svcBruno.Controller(CtrlCode);
+end;
+
+function TsvcBruno.GetServiceController: TServiceController;
+begin
+  Result := ServiceController;
+end;
+
+procedure TsvcBruno.ServiceCreate(Sender: TObject);
+begin
+  THorse.Use(Jhonson);
+  THorse.Use(HorseBasicAuthentication(
+    function(const aUsuario, aSenha: string): Boolean
+    begin
+      // Here inside you can access your database and validate if username and password are valid
+      Result := aUsuario.Equals('bruno') and APassword.aUsuario('password');
+    end));
+
+  TcontrollerTask.Registrar;
+end;
+
+procedure TsvcBruno.ServiceStart(Sender: TService; var Started: Boolean);
+begin
+  THorse.Listen;
+  Started := True;
+end;
+
+procedure TsvcBruno.ServiceStop(Sender: TService; var Stopped: Boolean);
+begin
+  THorse.StopListen;
+  Stopped := True;
+end;
+
+end.

@@ -1,0 +1,22 @@
+unit uConnection;
+
+interface
+
+uses
+  UnitConnection.Model.Interfaces, UnitFactory.Connection.Firedac;
+
+type
+  TConnection = class
+    class function Query: iQuery;
+  end;
+
+implementation
+
+{ TConnection }
+
+class function TConnection.Query: iQuery;
+begin
+  Result := TFactoryConnectionFiredac.New('Jhonys-NoteAsus\SQLEXPRESS', 'Montreal', 'bruno', 'bruno').Query;
+end;
+
+end.

@@ -1,0 +1,74 @@
+unit uviewAlterar;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, RESTRequest4D,
+  System.JSON, System.StrUtils;
+
+type
+  TviewAlterar = class(TForm)
+    Panel1: TPanel;
+    Button4: TButton;
+    Button1: TButton;
+    Label2: TLabel;
+    ComboBox1: TComboBox;
+    Edit1: TEdit;
+    Label1: TLabel;
+    procedure Button1Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+  private
+    procedure Alterar;
+  public
+    { Public declarations }
+  end;
+
+var
+  viewAlterar: TviewAlterar;
+
+implementation
+
+{$R *.dfm}
+
+procedure TviewAlterar.Alterar;
+var
+  LResponse: IResponse;
+  lObj: TJSONObject;
+begin
+  try
+    lObj := TJSONObject.Create;
+    try
+      lObj.AddPair('status', ifThen(ComboBox1.ItemIndex = 0, 'A', 'C'));
+      LResponse := TRequest.New.BaseURL('http://localhost:9000/task/' + Edit1.Text)
+        .BasicAuthentication('bruno', 'montreal')
+        .Accept('application/json')
+        .AddBody(lObj)
+        .Put;
+
+      if LResponse.StatusCode = 200 then
+        ShowMessage('O status da tarefa foi alterado!')
+      else
+        raise Exception.Create('Falha na edição do status da tarefa!');
+    finally
+      lObj := nil;
+      lObj.Free;
+      Self.Close;
+    end;
+  except
+    on E: Exception do
+      ShowMessage('Falha ao alterar o status da tarefa: ' + E.Message);
+  end;
+end;
+
+procedure TviewAlterar.Button1Click(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TviewAlterar.Button4Click(Sender: TObject);
+begin
+  Alterar;
+end;
+
+end.

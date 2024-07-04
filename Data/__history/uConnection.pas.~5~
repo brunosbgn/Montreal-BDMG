@@ -1,0 +1,22 @@
+unit uConnection;
+
+interface
+
+uses
+  UnitConnection.Model.Interfaces, UnitFactory.Connection.IBExpress;
+
+type
+  TConnection = class
+    class function Query: iQuery;
+  end;
+
+implementation
+
+{ TConnection }
+
+class function TConnection.Query: iQuery;
+begin
+  Result := TFactoryConnectionIBExpress.New('../../Data/MONTREAL.FDB');
+end;
+
+end.

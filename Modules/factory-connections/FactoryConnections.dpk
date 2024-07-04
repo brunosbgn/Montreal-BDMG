@@ -1,0 +1,50 @@
+package FactoryConnections;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  vcl,
+  dbrtl,
+  vclFireDAC,
+  FireDAC,
+  FireDACCommonDriver,
+  FireDACCommon,
+  FireDACIBDriver,
+  ibxpress;
+
+contains
+  UnitConnection.Model.Interfaces in 'src\UnitConnection.Model.Interfaces.pas',
+  UnitConnection.Firedac.Model in 'src\FireDAC\UnitConnection.Firedac.Model.pas',
+  UnitFactory.Connection.Firedac in 'src\FireDAC\UnitFactory.Connection.Firedac.pas',
+  UnitQuery.FireDAC.Model in 'src\FireDAC\UnitQuery.FireDAC.Model.pas',
+  UnitConnection.Model.IBExpress in 'src\IBExpress\UnitConnection.Model.IBExpress.pas',
+  UnitConnection.Model.Query.IBExpress in 'src\IBExpress\UnitConnection.Model.Query.IBExpress.pas',
+  UnitFactory.Connection.IBExpress in 'src\IBExpress\UnitFactory.Connection.IBExpress.pas';
+
+end.

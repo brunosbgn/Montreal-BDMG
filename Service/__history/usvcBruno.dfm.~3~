@@ -1,0 +1,6 @@
+object svcBruno: TsvcBruno
+  OnCreate = ServiceCreate
+  DisplayName = 'svcBruno'
+  Height = 480
+  Width = 640
+end

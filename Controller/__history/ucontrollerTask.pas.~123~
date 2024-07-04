@@ -1,0 +1,228 @@
+unit ucontrollerTask;
+
+interface
+
+uses
+  System.Classes, System.SysUtils, System.JSON, Horse,
+  System.Generics.Collections, Horse.Commons;
+
+type
+  TcontrollerTask = class
+    {Rotas básicas}
+    class procedure Registrar;
+    class procedure Get(aReq: THorseRequest; aRes: THorseResponse; aNext: TProc);
+    class procedure GetWhere(aReq: THorseRequest; aRes: THorseResponse; aNext: TProc);
+    class procedure Post(aReq: THorseRequest; aRes: THorseResponse; aNext: TProc);
+    class procedure Put(aReq: THorseRequest; aRes: THorseResponse; aNext: TProc);
+    class procedure Delete(aReq: THorseRequest; aRes: THorseResponse; aNext: TProc);
+
+    {Consultas personalizadas}
+    class procedure GetTotal(aReq: THorseRequest; aRes: THorseResponse; aNext: TProc);
+    class procedure GetMediaPrioridades(aReq: THorseRequest; aRes: THorseResponse; aNext: TProc);
+    class procedure GetConcluidas7Dias(aReq: THorseRequest; aRes: THorseResponse; aNext: TProc);    
+  end;
+
+implementation
+
+{ TcontrollerTask }
+
+uses umodelTask;
+
+class procedure TcontrollerTask.Delete(aReq: THorseRequest;
+  aRes: THorseResponse; aNext: TProc);
+var lCodigo: Integer;
+    lTask: TmodelTask;
+begin
+  {Contagem dos parâmetros}
+  if aReq.Params.Count = 0 then
+  begin
+    {Mensagem de exceção}
+    aRes.Send<TJSONObject>(TJSONObject.Create.AddPair('erro', 'tarefa não encontrada!'))
+        .Status(THTTPStatus.NotFound);
+  end;
+
+  {Atribuindo o parâmetro na variável}
+  lCodigo := aReq.Params.Items['codigo'].ToInteger;
+
+  {Busca do código da tarefa e chamada do DELETE}
+  lTask := TmodelTask.SelectWhere(lCodigo);
+  lTask.Delete;
+
+  {Reposta}
+  aRes.Send<TJSONObject>(TJSONObject.Create.AddPair('mensagem', 'tarefa excluída!'));
+end;
+
+class procedure TcontrollerTask.Get(aReq: THorseRequest; aRes: THorseResponse;
+  aNext: TProc);
+var
+  lTasks: TList<TmodelTask>;
+  lTask: TmodelTask;
+  lArr: TJSONArray;
+  lObj: TJSONObject;
+begin
+  {Criação do array, por ter n registros}
+  lArr := TJSONArray.Create;
+
+  {Chamada do SELECT}
+  lTasks := TmodelTask.Select;
+
+  {Percorrendo o array e alimentando os objetos}
+  for lTask in lTasks do
+  begin
+    lObj := TJSONObject.Create;
+    lObj.AddPair('codigo', TJSONNumber.Create(lTask.codigo));
+    lObj.AddPair('descricao', lTask.descricao);
+    lObj.AddPair('status', lTask.status);
+    lObj.AddPair('data', lTask.data);
+    lObj.AddPair('prioridade', lTask.prioridade);
+    lArr.AddElement(lObj);
+  end;
+  {Respondendo a requisição com o array}
+  aRes.Send<TJSONArray>(lArr);
+end;
+
+class procedure TcontrollerTask.GetConcluidas7Dias(aReq: THorseRequest;
+  aRes: THorseResponse; aNext: TProc);
+var
+  lTask: TmodelTask;
+  lObj: TJSONObject;
+begin
+  {Chamada do SELECT do desafio - considerar os comentários para as 3}
+  lTask := TmodelTask.TarefasConcluidas;
+  lObj := TJSONObject.Create;
+
+  {Criação do objeto}
+  lObj.AddPair('concluidas_7_dias', TJSONNumber.Create(lTask.concluidas));
+
+  {Resposta da requisição}
+  aRes.Send<TJSONObject>(lObj).Status(THTTPStatus.OK);
+end;
+
+class procedure TcontrollerTask.GetMediaPrioridades(aReq: THorseRequest;
+  aRes: THorseResponse; aNext: TProc);
+var
+  lTask: TmodelTask;
+  lObj: TJSONObject;
+begin
+  lTask := TmodelTask.MediaPrioridade;
+  lObj := TJSONObject.Create;  
+  lObj.AddPair('media_prioridade', TJSONNumber.Create(lTask.media));
+  aRes.Send<TJSONObject>(lObj).Status(THTTPStatus.OK);
+end;
+
+class procedure TcontrollerTask.GetTotal(aReq: THorseRequest;
+  aRes: THorseResponse; aNext: TProc);
+var
+  lTask: TmodelTask;
+  lObj: TJSONObject;
+begin
+  lTask := TmodelTask.TotalTarefas;
+  lObj := TJSONObject.Create;
+
+  if Assigned(lTask) then
+  begin
+    lObj.AddPair('total_tarefas', TJSONNumber.Create(lTask.total));
+    aRes.Send<TJSONObject>(lObj).Status(THTTPStatus.OK);
+  end
+  else aRes.Send<TJSONObject>(TJSONObject.Create.AddPair('erro', 'Consulta não realizada!'))
+        .Status(THTTPStatus.NotFound);
+end;
+
+class procedure TcontrollerTask.GetWhere(aReq: THorseRequest; aRes: THorseResponse;
+  aNext: TProc);
+var
+  lTask: TmodelTask;
+  lObj: TJSONObject;
+  lCodigo: Integer;
+begin
+  {Verificação do parâmetro, por ser consulta única}
+  if aReq.Params.Count = 0 then
+    raise Exception.Create('Código não encontrado!');
+
+  {Alimentando a variável com o parâmetro e chamando o SELECT}
+  lCodigo := aReq.Params.Items['codigo'].ToInteger;
+  lTask := TmodelTask.SelectWhere(lCodigo);
+
+  {Verificando se existe resultado para montar a resposta positiva e negativa}
+  if Assigned(lTask) then
+  begin
+    lObj := TJSONObject.Create;
+    lObj.AddPair('codigo', TJSONNumber.Create(lTask.codigo));
+    lObj.AddPair('descricao', lTask.descricao);
+    lObj.AddPair('status', lTask.status);
+    lObj.AddPair('data', lTask.data);
+    lObj.AddPair('prioridade', lTask.prioridade);
+    aRes.Send<TJSONObject>(lObj).Status(THTTPStatus.OK);
+  end
+  else
+    aRes.Send<TJSONObject>(TJSONObject.Create.AddPair('erro', 'tarefa não encontrada!'))
+        .Status(THTTPStatus.NotFound);
+end;
+
+class procedure TcontrollerTask.Post(aReq: THorseRequest; aRes: THorseResponse;
+  aNext: TProc);
+var
+  lTask: TmodelTask;
+  lObj: TJSONObject;
+begin
+  {Verificação do corpo. Nesse teste, não criei muita tratativa aqui no serviço, pois obriguei no client}
+  if aReq.Body.IsEmpty then
+    raise Exception.Create('Requisição sem corpo!');
+
+  {Leitura do corpo para dar o INSERT na tabela}
+  lObj := aReq.Body<TJSONObject>;  
+  lTask := TmodelTask.Create;
+  try
+    lTask.descricao  := lObj.GetValue<String>('descricao');
+    lTask.status     := lObj.GetValue<String>('status');
+    lTask.data       := lObj.GetValue<TDateTime>('data');
+    lTask.prioridade := lObj.GetValue<Integer>('prioridade');
+    lTask.Insert;
+    aRes.Send<TJSONObject>(lObj);
+  finally
+    lTask.Free;
+  end;  
+end;
+
+class procedure TcontrollerTask.Put(aReq: THorseRequest; aRes: THorseResponse;
+  aNext: TProc);
+var
+  lTask: TmodelTask;
+  lObj: TJSONObject;
+  lCodigo: Integer;
+begin
+  if aReq.Params.Count = 0 then
+    raise Exception.Create('Código não encontrado!');
+
+  lCodigo := aReq.Params.Items['codigo'].ToInteger;
+
+  if aReq.Body.IsEmpty then
+    raise Exception.Create('Requisição sem corpo!');
+
+  lObj := aReq.Body<TJSONObject>;    
+  lTask := TmodelTask.SelectWhere(lCodigo);
+
+  if Assigned(lTask) then
+  begin     
+    lTask.status := lObj.GetValue<String>('status');
+    lTask.Update;  
+    aRes.Send<TJSONObject>(lObj).Status(THTTPStatus.OK);
+  end
+  else
+    aRes.Send<TJSONObject>(TJSONObject.Create.AddPair('erro', 'tarefa não encontrada!'))
+        .Status(THTTPStatus.NotFound);
+end;
+
+class procedure TcontrollerTask.Registrar;
+begin
+  THorse.Get('/task/:codigo', GetWhere)
+        .Get('/task', Get)
+        .Post('/task', Post)
+        .Put('/task/:codigo', Put)
+        .Delete('/task/:codigo', Delete)
+        .Get('/task/total', GetTotal)
+        .Get('/task/media', GetMediaPrioridades)
+        .Get('/task/concluidas', GetConcluidas7Dias);
+end;
+
+end.

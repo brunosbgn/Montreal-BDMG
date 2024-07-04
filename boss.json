@@ -1,0 +1,16 @@
+{
+	"name": "boss install q",
+	"description": "",
+	"version": "1.0.0",
+	"homepage": "",
+	"mainsrc": "./src",
+	"projects": [],
+	"dependencies": {
+		"github.com/hashload/horse": "^3.1.6",
+		"github.com/hashload/horse-basic-auth": "^1.2.3",
+		"github.com/hashload/jhonson": "^1.1.9",
+		"github.com/viniciussanchez/dataset-serialize": "^v2.5.9",
+		"github.com/viniciussanchez/restrequest4delphi": "^v4.0.18",
+		"https://github.com/cachopaweb/factory-connections": "^v1.0.3"
+	}
+}

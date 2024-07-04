@@ -1,0 +1,161 @@
+unit umodelTask;
+
+interface
+
+uses
+  System.SysUtils, System.Generics.Collections, UnitConnection.Model.Interfaces,
+  System.Classes, Data.DB;
+
+type
+  TmodelTask = class
+    private
+    {Variáveis das propriedades}
+    Fcodigo: integer;
+    Fdescricao: string;
+    Fstatus: string;
+    Fdata: TDateTime;
+    Fprioridade: Integer;
+    Fmedia: Integer;
+    Ftotal: Integer;
+    Fconcluidas: Integer;
+    public
+      property codigo: integer read Fcodigo write Fcodigo;
+      property descricao: string read Fdescricao write Fdescricao;
+      property status: string read Fstatus write Fstatus;
+      property data: TDateTime read Fdata write Fdata;
+      property prioridade: Integer read Fprioridade write Fprioridade;
+      property total: Integer read Ftotal write Ftotal;
+      property media: Integer read Fmedia write Fmedia;
+      property concluidas: Integer read Fconcluidas write Fconcluidas;
+
+      {Funções e procedures do CRUD}
+      class function SelectWhere(aCodigo: Integer): TmodelTask;
+      class function Select: TList<TmodelTask>;
+      class function TotalTarefas: TmodelTask;
+      class function MediaPrioridade: TmodelTask;
+      class function TarefasConcluidas: TmodelTask;
+      procedure Insert;
+      procedure Update;
+      procedure Delete;
+  end;
+
+implementation
+
+uses
+  uConnection;
+
+{ TmodelTask }
+
+procedure TmodelTask.Delete;
+var lQry: iQuery;
+begin
+  {Criação de query e DELETE}
+  lQry := TConnection.Query;
+  lQry.Add('DELETE FROM TASK WHERE CODIGO = :CODIGO');
+  lQry.AddParam('CODIGO', codigo);
+  lQry.ExecSQL;
+end;
+
+procedure TmodelTask.Insert;
+var lQry: iQuery;
+begin
+  {Criação da query e INSERT}
+  lQry := TConnection.Query;
+  lQry.Add('INSERT INTO TASK (DESCRICAO, STATUS, DATA, PRIORIDADE) VALUES (:DESCRICAO, :STATUS, :DATA, :PRIORIDADE)');
+  lQry.AddParam('DESCRICAO', descricao);
+  lQry.AddParam('STATUS', status);
+  lQry.AddParam('DATA', data);
+  lQry.AddParam('PRIORIDADE', prioridade);
+  lQry.ExecSQL;
+end;
+
+class function TmodelTask.MediaPrioridade: TmodelTask;
+var lQry: iQuery;
+begin
+  {Criação da query e SELECT da consulta do desafio - mesmo comentário para as 3}
+  lQry := TConnection.Query;
+  lQry.Add('SELECT AVG(COALESCE(PRIORIDADE, 0)) MEDIA FROM TASK WHERE STATUS = ''A''');
+  lQry.Open;
+  Result := TmodelTask.Create;
+  Result.media := lQry.DataSet.FieldByName('MEDIA').AsInteger;
+end;
+
+class function TmodelTask.Select: TList<TmodelTask>;
+var lQry: iQuery;
+    lTask: TmodelTask;
+begin
+  {Criação da lista para exibir n registros}
+  Result := TList<TmodelTask>.Create;
+
+  {Criação da query e execução do SELECT}
+  lQry := TConnection.Query;
+  lQry.Add('SELECT * FROM TASK');
+  lQry.Open;
+
+  {Percorrendo os registros para montar o array do json}
+  while not lQry.DataSet.EoF do
+  begin
+    lTask := TmodelTask.Create;
+    lTask.codigo     := lQry.DataSet.FieldByName('CODIGO').AsInteger;
+    lTask.descricao  := lQry.DataSet.FieldByName('DESCRICAO').AsString;
+    lTask.status     := lQry.DataSet.FieldByName('STATUS').AsString;
+    lTask.data       := lQry.DataSet.FieldByName('DATA').AsDateTime;
+    lTask.prioridade := lQry.DataSet.FieldByName('PRIORIDADE').AsInteger;
+
+    Result.Add(lTask);
+    lQry.DataSet.Next;
+  end;
+end;
+
+class function TmodelTask.SelectWhere(aCodigo: Integer): TmodelTask;
+var lQry: iQuery;
+begin
+{{Criação da query e SELECT}
+  lQry := TConnection.Query;
+  lQry.Add('SELECT * FROM TASK WHERE CODIGO = :CODIGO');
+  lQry.AddParam('CODIGO', aCodigo);
+  lQry.Open;
+
+  {Verificação do resultado e criação do objeto de resposta}
+  if not lQry.DataSet.IsEmpty then
+  begin
+    Result := TmodelTask.Create;
+    Result.codigo     := lQry.DataSet.FieldByName('CODIGO').AsInteger;
+    Result.descricao  := lQry.DataSet.FieldByName('DESCRICAO').AsString;
+    Result.status     := lQry.DataSet.FieldByName('STATUS').AsString;
+    Result.data       := lQry.DataSet.FieldByName('DATA').AsDateTime;
+    Result.prioridade := lQry.DataSet.FieldByName('PRIORIDADE').AsInteger;
+  end;
+end;
+
+class function TmodelTask.TarefasConcluidas: TmodelTask;
+var lQry: iQuery;
+begin
+  lQry := TConnection.Query;
+  lQry.Add('SELECT COUNT(*) TOTAL FROM TASK WHERE STATUS = ''C'' AND DATA <= CURRENT_TIMESTAMP ');
+  lQry.Open;
+  Result := TmodelTask.Create;
+  Result.concluidas := lQry.DataSet.FieldByName('TOTAL').AsInteger;
+end;
+
+class function TmodelTask.TotalTarefas: TmodelTask;
+var lQry: iQuery;
+begin
+  lQry := TConnection.Query;
+  lQry.Add('SELECT COUNT(*) TOTAL FROM TASK');
+  lQry.Open;
+  Result := TmodelTask.Create;
+  Result.total  := lQry.DataSet.FieldByName('TOTAL').AsInteger;
+end;
+
+procedure TmodelTask.Update;
+var lQry: iQuery;
+begin
+  lQry := TConnection.Query;
+  lQry.Add('UPDATE TASK SET STATUS = :STATUS WHERE CODIGO = :CODIGO');
+  lQry.AddParam('STATUS', status);
+  lQry.AddParam('CODIGO', codigo);
+  lQry.ExecSQL;
+end;
+
+end.
